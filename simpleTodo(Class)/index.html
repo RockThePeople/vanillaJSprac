@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <p style="font-size: 50px;">vanilla test</p>
+        <input id="titleInput" placeholder="할일 제목" />
+        <input id="bodyInput" placeholder="세부사항" />
+        <button onclick="buttonClick()">append</button>
+    </div>
+    <div id="todoShow">
+    </div>
+    <hr />
+    <div id="completedTodos">
+    </div>
+
+</body>
+<script>
+
+    class Todo {
+        constructor(todoTitle, todoBody, complete = false) {
+            this.todoTitle = todoTitle
+            this.todoBody = todoBody
+            this.complete = complete
+        };
+    }
+
+    var tasks = [];
+    getFromLocalStrorage();
+    
+    function getFromLocalStrorage() {
+        tasks = JSON.parse(localStorage.getItem('tasks') || []);
+        showTasks();
+    }
+
+    var todoContainter = document.getElementById('todoShow');
+
+    function showTasks() {
+        var notDonetasks = tasks.filter(todo => todo.complete == false);
+        var doneTasks = tasks.filter(todo => todo.complete == true);
+        document.getElementById('todoShow').innerHTML = notDonetasks.map(todo => `<div>${todo.todoTitle} - ${todo.todoBody}<input type="checkbox" onclick="toggleComplete(${tasks.indexOf(todo)})" ${todo.complete ? 'checked' : ''}/></div>`).join('');
+        document.getElementById('completedTodos').innerHTML = doneTasks.map(todo => `<div>${todo.todoTitle} - ${todo.todoBody}<input type="checkbox" onclick="toggleComplete(${tasks.indexOf(todo)})" ${todo.complete ? 'checked' : ''}/></div>`).join('');
+
+    };
+
+    function saveLocalStrorage() {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function buttonClick() {
+        var newTask = new Todo(document.getElementById('titleInput').value, document.getElementById('bodyInput').value);
+        document.getElementById('titleInput').value = '';
+        document.getElementById('bodyInput').value = '';
+        if (!newTask.todoTitle) {
+            alert("제목은 필수 입력 사항압니다");
+            return;
+        };
+        tasks.push(newTask);
+        saveLocalStrorage();
+        showTasks();
+    };
+
+    function toggleComplete(index) {
+        tasks[index].complete = !tasks[index].complete;
+        saveLocalStrorage();
+        showTasks();
+    };
+</script>
+
+</html>
